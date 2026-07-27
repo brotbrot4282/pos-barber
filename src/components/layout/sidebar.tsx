@@ -33,19 +33,20 @@ interface MenuItem {
   label: string;
   icon: LucideIcon;
   href: string;
+  adminOnly?: boolean;
 }
 
-const menuItems: MenuItem[] = [
-  { label: "Dashboard", icon: Home, href: "/dashboard" },
+const allMenuItems: MenuItem[] = [
+  { label: "Dashboard", icon: Home, href: "/dashboard", adminOnly: true },
   { label: "Kasir", icon: Wallet, href: "/kasir" },
   { label: "Transaksi", icon: ClipboardList, href: "/transaksi" },
-  { label: "Layanan", icon: Scissors, href: "/layanan" },
-  { label: "Produk", icon: Package, href: "/produk" },
-  { label: "Member", icon: User, href: "/member" },
-  { label: "Reservasi", icon: Calendar, href: "/reservasi" },
-  { label: "Laporan", icon: BarChart3, href: "/laporan" },
-  { label: "Pengguna", icon: Users, href: "/pengguna" },
-  { label: "Pengaturan", icon: Settings, href: "/pengaturan" },
+  { label: "Layanan", icon: Scissors, href: "/layanan", adminOnly: true },
+  { label: "Produk", icon: Package, href: "/produk", adminOnly: true },
+  { label: "Member", icon: User, href: "/member", adminOnly: true },
+  { label: "Reservasi", icon: Calendar, href: "/reservasi", adminOnly: true },
+  { label: "Laporan", icon: BarChart3, href: "/laporan", adminOnly: true },
+  { label: "Pengguna", icon: Users, href: "/pengguna", adminOnly: true },
+  { label: "Pengaturan", icon: Settings, href: "/pengaturan", adminOnly: true },
 ];
 
 function ScissorsLogo({ className }: { className?: string }) {
@@ -71,10 +72,19 @@ function ScissorsLogo({ className }: { className?: string }) {
 
 interface SidebarContentProps {
   onNavigate?: () => void;
+  user?: {
+    name: string;
+    email: string;
+    role: string;
+  } | null;
 }
 
-function SidebarContent({ onNavigate }: SidebarContentProps) {
+function SidebarContent({ onNavigate, user }: SidebarContentProps) {
   const pathname = usePathname();
+
+  const menuItems = user?.role === "ADMIN" 
+    ? allMenuItems 
+    : allMenuItems.filter(item => !item.adminOnly);
 
   return (
     <div className="flex h-full w-64 flex-col bg-gray-900 text-white">
@@ -112,12 +122,12 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
             <AvatarFallback className="bg-gray-700 text-sm text-white">
-              A
+              {user?.name?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium">Admin</p>
-            <p className="truncate text-xs text-gray-400">admin@barber.com</p>
+            <p className="truncate text-sm font-medium">{user?.name || "User"}</p>
+            <p className="truncate text-xs text-gray-400">{user?.email || ""}</p>
           </div>
         </div>
         <form action={logoutAction}>
@@ -135,14 +145,14 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ user }: { user?: { name: string; email: string; role: string } | null }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside className="hidden lg:block">
-        <SidebarContent />
+        <SidebarContent user={user} />
       </aside>
 
       {/* Mobile hamburger button */}
@@ -153,7 +163,7 @@ export function Sidebar() {
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            <SidebarContent onNavigate={() => setOpen(false)} />
+            <SidebarContent onNavigate={() => setOpen(false)} user={user} />
           </SheetContent>
         </Sheet>
       </div>

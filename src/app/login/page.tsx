@@ -31,7 +31,11 @@ export default function LoginPage() {
 
       if (result.success) {
         toast.add({ type: "success", title: "Login berhasil" });
-        router.push("/kasir");
+        if (result.role === "ADMIN") {
+          router.push("/dashboard");
+        } else {
+          router.push("/kasir");
+        }
       } else {
         toast.add({ type: "error", title: result.error || "Login gagal" });
       }

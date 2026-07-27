@@ -4,8 +4,25 @@ import { verifyToken } from "@/lib/auth";
 
 const publicPaths = ["/login", "/api/auth"];
 
+const adminOnlyPaths = [
+  "/dashboard",
+  "/layanan",
+  "/produk",
+  "/member",
+  "/reservasi",
+  "/laporan",
+  "/pengguna",
+  "/pengaturan",
+];
+
 function isPublicPath(pathname: string): boolean {
   return publicPaths.some(
+    (path) => pathname === path || pathname.startsWith(path + "/")
+  );
+}
+
+function isAdminOnlyPath(pathname: string): boolean {
+  return adminOnlyPaths.some(
     (path) => pathname === path || pathname.startsWith(path + "/")
   );
 }
@@ -31,6 +48,10 @@ export async function proxy(request: NextRequest) {
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("token");
     return response;
+  }
+
+  if (isAdminOnlyPath(pathname) && payload.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/kasir", request.url));
   }
 
   return NextResponse.next();
