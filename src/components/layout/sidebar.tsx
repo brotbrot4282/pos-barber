@@ -13,19 +13,61 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Home,
+  Wallet,
+  ClipboardList,
+  Scissors,
+  Package,
+  User,
+  Calendar,
+  BarChart3,
+  Users,
+  Settings,
+  LogOut,
+  Menu,
+  type LucideIcon,
+} from "lucide-react";
 
-const menuItems = [
-  { label: "Dashboard", icon: "🏠", href: "/dashboard" },
-  { label: "Kasir", icon: "💰", href: "/kasir" },
-  { label: "Transaksi", icon: "📋", href: "/transaksi" },
-  { label: "Layanan", icon: "✂️", href: "/layanan" },
-  { label: "Produk", icon: "📦", href: "/produk" },
-  { label: "Member", icon: "👤", href: "/member" },
-  { label: "Reservasi", icon: "📅", href: "/reservasi" },
-  { label: "Laporan", icon: "📊", href: "/laporan" },
-  { label: "Pengguna", icon: "👥", href: "/pengguna" },
-  { label: "Pengaturan", icon: "⚙️", href: "/pengaturan" },
+interface MenuItem {
+  label: string;
+  icon: LucideIcon;
+  href: string;
+}
+
+const menuItems: MenuItem[] = [
+  { label: "Dashboard", icon: Home, href: "/dashboard" },
+  { label: "Kasir", icon: Wallet, href: "/kasir" },
+  { label: "Transaksi", icon: ClipboardList, href: "/transaksi" },
+  { label: "Layanan", icon: Scissors, href: "/layanan" },
+  { label: "Produk", icon: Package, href: "/produk" },
+  { label: "Member", icon: User, href: "/member" },
+  { label: "Reservasi", icon: Calendar, href: "/reservasi" },
+  { label: "Laporan", icon: BarChart3, href: "/laporan" },
+  { label: "Pengguna", icon: Users, href: "/pengguna" },
+  { label: "Pengaturan", icon: Settings, href: "/pengaturan" },
 ];
+
+function ScissorsLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <circle cx="6" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <line x1="20" y1="4" x2="8.12" y2="15.88" />
+      <line x1="14.47" y1="14.48" x2="20" y2="20" />
+      <line x1="8.12" y1="8.12" x2="12" y2="12" />
+    </svg>
+  );
+}
 
 interface SidebarContentProps {
   onNavigate?: () => void;
@@ -36,8 +78,8 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
 
   return (
     <div className="flex h-full w-64 flex-col bg-gray-900 text-white">
-      <div className="flex items-center gap-2 px-6 py-5">
-        <span className="text-2xl">✂️</span>
+      <div className="flex items-center gap-2.5 px-6 py-5">
+        <ScissorsLogo className="h-7 w-7 text-white" />
         <span className="text-xl font-bold tracking-tight">POS BARBER</span>
       </div>
 
@@ -57,7 +99,7 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
                   : "text-gray-300 hover:bg-gray-800 hover:text-white"
               }`}
             >
-              <span className="text-base">{item.icon}</span>
+              <item.icon className="h-4 w-4" />
               {item.label}
             </Link>
           );
@@ -84,7 +126,8 @@ function SidebarContent({ onNavigate }: SidebarContentProps) {
             variant="ghost"
             className="mt-3 w-full justify-start text-gray-300 hover:bg-gray-800 hover:text-white"
           >
-            🚪 Logout
+            <LogOut className="h-4 w-4" />
+            Logout
           </Button>
         </form>
       </div>
@@ -106,21 +149,7 @@ export function Sidebar() {
       <div className="fixed left-4 top-4 z-50 lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger render={<Button variant="outline" size="icon" className="bg-gray-900 text-white hover:bg-gray-800" />}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-              </svg>
+              <Menu className="h-5 w-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
