@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       totalRevenue,
       totalTransactions,
-      totalItems,
+      totalItemsSold: totalItems,
       topServices,
       dailyRevenue,
     });

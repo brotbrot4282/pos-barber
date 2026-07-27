@@ -111,6 +111,7 @@ export default function LaporanPage() {
         endDate: range.endDate,
       })
       const res = await fetch(`/api/reports?${params}`)
+      if (!res.ok) throw new Error("Failed to fetch report")
       const data = await res.json()
       setReportData(data)
     } catch {
@@ -128,7 +129,7 @@ export default function LaporanPage() {
     fetchReport()
   }, [fetchReport])
 
-  const maxRevenue = reportData?.dailyRevenue.length
+  const maxRevenue = reportData?.dailyRevenue?.length
     ? Math.max(...reportData.dailyRevenue.map((d) => d.revenue), 1)
     : 1
 
@@ -224,7 +225,7 @@ export default function LaporanPage() {
               <CardTitle>Top 5 Layanan Terlaris</CardTitle>
             </CardHeader>
             <CardContent>
-              {reportData.topServices.length === 0 ? (
+              {!reportData.topServices?.length ? (
                 <div className="py-6 text-center text-muted-foreground">
                   Tidak ada data layanan
                 </div>
@@ -268,7 +269,7 @@ export default function LaporanPage() {
               <CardTitle>Pendapatan Harian</CardTitle>
             </CardHeader>
             <CardContent>
-              {reportData.dailyRevenue.length === 0 ? (
+              {!reportData.dailyRevenue?.length ? (
                 <div className="py-6 text-center text-muted-foreground">
                   Tidak ada data pendapatan harian
                 </div>

@@ -29,6 +29,8 @@ import {
   Package,
   Check,
   Loader2,
+  Banknote,
+  QrCode,
 } from "lucide-react";
 
 interface Service {
@@ -555,19 +557,21 @@ export default function KasirPage() {
             <div className="flex gap-2 px-4 pb-2">
               <Button
                 variant={paymentMethod === "CASH" ? "default" : "outline"}
-                className="flex-1"
+                className="flex-1 gap-2"
                 size="lg"
                 onClick={() => setPaymentMethod("CASH")}
               >
-                💵 Tunai
+                <Banknote className="size-5" />
+                Tunai
               </Button>
               <Button
                 variant={paymentMethod === "QRIS" ? "default" : "outline"}
-                className="flex-1"
+                className="flex-1 gap-2"
                 size="lg"
                 onClick={() => setPaymentMethod("QRIS")}
               >
-                📱 QRIS
+                <QrCode className="size-5" />
+                QRIS
               </Button>
             </div>
 
@@ -645,12 +649,8 @@ export default function KasirPage() {
             ) : (
               <div className="space-y-3">
                 <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8">
-                  <div className="flex size-32 items-center justify-center rounded-lg border bg-white">
-                    <p className="text-center text-sm text-muted-foreground">
-                      Scan QR Code
-                      <br />
-                      QRIS
-                    </p>
+                  <div className="flex size-32 items-center justify-center rounded-xl border bg-white shadow-sm">
+                    <QrCode className="size-20 text-gray-800" strokeWidth={1} />
                   </div>
                   <p className="mt-3 text-sm text-muted-foreground">
                     Tunjukkan QR ini ke pelanggan
