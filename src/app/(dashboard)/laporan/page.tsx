@@ -197,7 +197,7 @@ export default function LaporanPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Total Pendapatan</CardDescription>
-                <CardTitle className="text-2xl">
+                <CardTitle className="text-xl sm:text-2xl">
                   {formatCurrency(reportData.totalRevenue)}
                 </CardTitle>
               </CardHeader>
@@ -205,7 +205,7 @@ export default function LaporanPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Total Transaksi</CardDescription>
-                <CardTitle className="text-2xl">
+                <CardTitle className="text-xl sm:text-2xl">
                   {reportData.totalTransactions}
                 </CardTitle>
               </CardHeader>
@@ -213,7 +213,7 @@ export default function LaporanPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardDescription>Total Item Terjual</CardDescription>
-                <CardTitle className="text-2xl">
+                <CardTitle className="text-xl sm:text-2xl">
                   {reportData.totalItemsSold}
                 </CardTitle>
               </CardHeader>
@@ -230,36 +230,38 @@ export default function LaporanPage() {
                   Tidak ada data layanan
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">Rank</TableHead>
-                      <TableHead>Nama Layanan</TableHead>
-                      <TableHead className="text-right">
-                        Jumlah Terjual
-                      </TableHead>
-                      <TableHead className="text-right">
-                        Total Pendapatan
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {reportData.topServices.map((service, i) => (
-                      <TableRow key={service.name}>
-                        <TableCell className="font-medium">
-                          {i + 1}
-                        </TableCell>
-                        <TableCell>{service.name}</TableCell>
-                        <TableCell className="text-right">
-                          {service.quantitySold}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(service.totalRevenue)}
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[480px]">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Rank</TableHead>
+                        <TableHead>Nama Layanan</TableHead>
+                        <TableHead className="text-right">
+                          Jumlah Terjual
+                        </TableHead>
+                        <TableHead className="text-right">
+                          Total Pendapatan
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {reportData.topServices.map((service, i) => (
+                        <TableRow key={service.name}>
+                          <TableCell className="font-medium">
+                            {i + 1}
+                          </TableCell>
+                          <TableCell>{service.name}</TableCell>
+                          <TableCell className="text-right">
+                            {service.quantitySold}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatCurrency(service.totalRevenue)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -274,7 +276,8 @@ export default function LaporanPage() {
                   Tidak ada data pendapatan harian
                 </div>
               ) : (
-                <div className="flex items-end gap-1.5 h-52">
+                <div className="overflow-x-auto">
+                  <div className="flex items-end gap-1.5 h-52" style={{ minWidth: `${reportData.dailyRevenue.length * 48}px` }}>
                   {reportData.dailyRevenue.map((item) => {
                     const height =
                       maxRevenue > 0
@@ -298,6 +301,7 @@ export default function LaporanPage() {
                       </div>
                     )
                   })}
+                  </div>
                 </div>
               )}
             </CardContent>
