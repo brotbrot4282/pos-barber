@@ -11,19 +11,19 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 export async function loginAction(
   formData: FormData
 ): Promise<{ success: boolean; error?: string; role?: string }> {
-  const email = formData.get("email") as string;
+  const name = formData.get("name") as string;
   const password = formData.get("password") as string;
 
-  if (!email || !password) {
-    return { success: false, error: "Email dan password harus diisi" };
+  if (!name || !password) {
+    return { success: false, error: "Username dan password harus diisi" };
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
+  const user = await prisma.user.findFirst({
+    where: { name },
   });
 
   if (!user) {
-    return { success: false, error: "Email atau password salah" };
+    return { success: false, error: "Username atau password salah" };
   }
 
   if (!user.isActive) {
@@ -32,7 +32,7 @@ export async function loginAction(
 
   const valid = await comparePassword(password, user.password);
   if (!valid) {
-    return { success: false, error: "Email atau password salah" };
+    return { success: false, error: "Username atau password salah" };
   }
 
   const token = await signToken({
