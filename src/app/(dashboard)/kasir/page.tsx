@@ -32,6 +32,12 @@ import {
   Banknote,
   QrCode,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface Service {
   id: string;
@@ -91,6 +97,7 @@ export default function KasirPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState("");
+  const [showCartSheet, setShowCartSheet] = useState(false);
 
   const amountPaidRef = useRef<HTMLInputElement>(null);
   const memberSearchTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -267,7 +274,7 @@ export default function KasirPage() {
   return (
     <div className="flex h-full gap-4">
       {/* LEFT PANEL */}
-      <div className="flex-1 overflow-y-auto pr-2">
+      <div className="flex-1 overflow-y-auto pb-24 pr-2 lg:pb-0">
         <h1 className="mb-4 text-2xl font-bold tracking-tight">
           Pilih Layanan/Produk
         </h1>
@@ -375,8 +382,8 @@ export default function KasirPage() {
         )}
       </div>
 
-      {/* RIGHT PANEL */}
-      <div className="sticky top-0 flex h-full w-[400px] shrink-0 flex-col lg:w-[420px]">
+      {/* RIGHT PANEL - Desktop */}
+      <div className="sticky top-0 hidden h-full w-[400px] shrink-0 flex-col lg:flex lg:w-[420px]">
         <Card className="flex flex-1 flex-col overflow-hidden">
           <CardHeader className="flex flex-row items-center gap-2 border-b pb-4">
             <ShoppingCart className="size-5" />
@@ -589,6 +596,223 @@ export default function KasirPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* FLOATING CART BAR - Mobile only */}
+      {cart.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background p-3 shadow-lg lg:hidden">
+          <button
+            onClick={() => setShowCartSheet(true)}
+            className="flex w-full items-center gap-3"
+          >
+            <div className="relative">
+              <ShoppingCart className="size-5" />
+              <span className="absolute -right-2 -top-2 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {cartItemCount}
+              </span>
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium">{cartItemCount} item</p>
+              <p className="text-lg font-bold">{formatRupiah(calculateTotal())}</p>
+            </div>
+            <Button size="lg" className="px-6" onClick={(e) => { e.stopPropagation(); setShowPaymentDialog(true); }}>
+              BAYAR
+            </Button>
+          </button>
+        </div>
+      )}
+
+      {/* CART SHEET - Mobile */}
+      <Sheet open={showCartSheet} onOpenChange={setShowCartSheet}>
+        <SheetContent side="bottom" className="max-h-[85vh] p-0" showCloseButton={false}>
+          <SheetHeader className="border-b px-4 py-3">
+            <SheetTitle className="flex items-center gap-2">
+              <ShoppingCart className="size-5" />
+              Keranjang
+              {cartItemCount > 0 && (
+                <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">
+                  {cartItemCount} item
+                </span>
+              )}
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="flex max-h-[calc(85vh-120px)] flex-col overflow-hidden">
+            {/* Cart Items */}
+            <div className="flex-1 overflow-y-auto p-4">
+              {cart.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <ShoppingCart className="mb-2 size-8 opacity-40" />
+                  <p className="text-sm">Keranjang kosong</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {cart.map((item, index) => (
+                    <div
+                      key={`${item.itemType}-${item.id}-${index}`}
+                      className="flex flex-col gap-2 rounded-lg border p-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="flex-1 truncate text-sm font-medium">
+                          {item.name}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          onClick={() => removeFromCart(index)}
+                          className="shrink-0 text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="size-3.5" />
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                          {formatRupiah(item.price)}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon-xs"
+                            onClick={() => updateQuantity(index, -1)}
+                          >
+                            <Minus className="size-3" />
+                          </Button>
+                          <span className="w-6 text-center text-sm font-medium">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="icon-xs"
+                            onClick={() => updateQuantity(index, 1)}
+                          >
+                            <Plus className="size-3" />
+                          </Button>
+                        </div>
+                        <p className="w-24 text-right text-sm font-semibold">
+                          {formatRupiah(item.price * item.quantity)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Member */}
+            <div className="border-t px-4 py-3">
+              <p className="mb-2 text-sm font-medium">Member</p>
+              {member ? (
+                <div className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{member.name}</p>
+                    <Badge variant="secondary" className="mt-0.5 text-[10px]">
+                      {member.level}
+                    </Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={() => { setMember(null); setMemberSearch(""); }}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Cari member..."
+                    value={memberSearch}
+                    onChange={(e) => handleMemberSearch(e.target.value)}
+                    onFocus={() => memberResults.length > 0 && setShowMemberDropdown(true)}
+                    className="h-8 pl-8 text-sm"
+                  />
+                  {showMemberDropdown && memberResults.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-40 overflow-y-auto rounded-lg border bg-popover shadow-md">
+                      {memberResults.map((m) => (
+                        <button
+                          key={m.id}
+                          className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-muted"
+                          onClick={() => { setMember(m); setMemberSearch(""); setShowMemberDropdown(false); }}
+                        >
+                          <div>
+                            <p className="font-medium">{m.name}</p>
+                            <p className="text-xs text-muted-foreground">{m.phone}</p>
+                          </div>
+                          <Badge variant="outline" className="text-[10px]">{m.level}</Badge>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Discount */}
+            <div className="border-t px-4 py-3">
+              <p className="mb-2 text-sm font-medium">Diskon (Rp)</p>
+              <Input
+                type="number"
+                min={0}
+                placeholder="0"
+                value={discount || ""}
+                onChange={(e) => setDiscount(Math.max(0, Number(e.target.value)))}
+                className="h-8 text-sm"
+              />
+            </div>
+
+            {/* Summary + Payment */}
+            <div className="border-t bg-muted/30 px-4 py-3">
+              <div className="mb-3 space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span>{formatRupiah(calculateSubtotal())}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Diskon</span>
+                    <span className="font-medium text-destructive">-{formatRupiah(discount)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-base font-bold">
+                  <span>Total</span>
+                  <span>{formatRupiah(calculateTotal())}</span>
+                </div>
+              </div>
+
+              <div className="mb-3 flex gap-2">
+                <Button
+                  variant={paymentMethod === "CASH" ? "default" : "outline"}
+                  className="flex-1 gap-2"
+                  size="sm"
+                  onClick={() => setPaymentMethod("CASH")}
+                >
+                  <Banknote className="size-4" />
+                  Tunai
+                </Button>
+                <Button
+                  variant={paymentMethod === "QRIS" ? "default" : "outline"}
+                  className="flex-1 gap-2"
+                  size="sm"
+                  onClick={() => setPaymentMethod("QRIS")}
+                >
+                  <QrCode className="size-4" />
+                  QRIS
+                </Button>
+              </div>
+
+              <Button
+                className="h-11 w-full text-base font-bold"
+                size="lg"
+                disabled={cart.length === 0 || loading}
+                onClick={() => { setShowCartSheet(false); setShowPaymentDialog(true); }}
+              >
+                BAYAR
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* PAYMENT DIALOG */}
       <Dialog
