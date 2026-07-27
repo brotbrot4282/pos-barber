@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CASHIER
+}
+
+enum PaymentMethod {
+  CASH
+  QRIS
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum MemberLevel {
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CASHIER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions Transaction[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  services Service[]
+  products Product[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  duration    Int      @default(30)
+  isActive    Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category         Category           @relation(fields: [categoryId], references: [id])
+  transactionItems TransactionItem[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  stock       Int      @default(0)
+  isActive    Boolean  @default(true)
+  categoryId  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category         Category           @relation(fields: [categoryId], references: [id])
+  transactionItems TransactionItem[]
+}
+
+model Member {
+  id        String      @id @default(cuid())
+  name      String
+  phone     String      @unique
+  email     String?
+  level     MemberLevel @default(SILVER)
+  points    Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  transactions Transaction[]
+}
+
+model Reservation {
+  id           String            @id @default(cuid())
+  customerName String
+  phone        String?
+  date         DateTime
+  time         String
+  barberName   String
+  notes        String?
+  status       ReservationStatus @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model Transaction {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  subtotal      Int
+  discount      Int           @default(0)
+  total         Int
+  paymentMethod PaymentMethod
+  amountPaid    Int
+  change        Int           @default(0)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  userId   String
+  user     User    @relation(fields: [userId], references: [id])
+  memberId String?
+  member   Member? @relation(fields: [memberId], references: [id])
+
+  items TransactionItem[]
+}
+
+model TransactionItem {
+  id            String      @id @default(cuid())
+  name          String
+  price         Int
+  quantity      Int         @default(1)
+  subtotal      Int
+  itemType      String      @default("service")
+
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  serviceId     String?
+  service       Service?    @relation(fields: [serviceId], references: [id])
+  productId     String?
+  product       Product?    @relation(fields: [productId], references: [id])
+}
+
+model StoreSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
