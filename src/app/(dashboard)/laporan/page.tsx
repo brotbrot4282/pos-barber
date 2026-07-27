@@ -220,18 +220,18 @@ export default function LaporanPage() {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Top 5 Layanan Terlaris</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {!reportData.topServices?.length ? (
-                <div className="py-6 text-center text-muted-foreground">
-                  Tidak ada data layanan
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table className="min-w-[480px]">
+          <div className="overflow-x-auto">
+            <Card className="min-w-[480px]">
+              <CardHeader>
+                <CardTitle>Top 5 Layanan Terlaris</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!reportData.topServices?.length ? (
+                  <div className="py-6 text-center text-muted-foreground">
+                    Tidak ada data layanan
+                  </div>
+                ) : (
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-12">Rank</TableHead>
@@ -261,51 +261,51 @@ export default function LaporanPage() {
                       ))}
                     </TableBody>
                   </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Pendapatan Harian</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {!reportData.dailyRevenue?.length ? (
-                <div className="py-6 text-center text-muted-foreground">
-                  Tidak ada data pendapatan harian
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <div className="flex items-end gap-1.5 h-52" style={{ minWidth: `${reportData.dailyRevenue.length * 48}px` }}>
-                  {reportData.dailyRevenue.map((item) => {
-                    const height =
-                      maxRevenue > 0
-                        ? (item.revenue / maxRevenue) * 100
-                        : 0
-                    return (
-                      <div
-                        key={item.date}
-                        className="flex flex-1 flex-col items-center gap-1"
-                      >
-                        <span className="text-[10px] text-muted-foreground leading-none">
-                          {formatCurrency(item.revenue)}
-                        </span>
-                        <div
-                          className="w-full rounded-t bg-primary transition-all"
-                          style={{ height: `${Math.max(height, 2)}%` }}
-                        />
-                        <span className="text-[10px] text-muted-foreground leading-none">
-                          {format(new Date(item.date), "dd/MM")}
-                        </span>
-                      </div>
-                    )
-                  })}
+          <div className="overflow-x-auto">
+            <Card className="min-w-[480px]">
+              <CardHeader>
+                <CardTitle>Pendapatan Harian</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!reportData.dailyRevenue?.length ? (
+                  <div className="py-6 text-center text-muted-foreground">
+                    Tidak ada data pendapatan harian
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                ) : (
+                  <div className="flex items-end gap-1.5 h-52">
+                    {reportData.dailyRevenue.map((item) => {
+                      const height =
+                        maxRevenue > 0
+                          ? (item.revenue / maxRevenue) * 100
+                          : 0
+                      return (
+                        <div
+                          key={item.date}
+                          className="flex flex-1 flex-col items-center gap-1"
+                        >
+                          <span className="text-[10px] text-muted-foreground leading-none">
+                            {formatCurrency(item.revenue)}
+                          </span>
+                          <div
+                            className="w-full rounded-t bg-primary transition-all"
+                            style={{ height: `${Math.max(height, 2)}%` }}
+                          />
+                          <span className="text-[10px] text-muted-foreground leading-none">
+                            {format(new Date(item.date), "dd/MM")}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </>
       )}
     </div>
